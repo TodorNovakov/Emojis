@@ -1,11 +1,13 @@
 import os
 import pandas
 
+
 def getTweetTextByLine():
     with open(DATA_PATH_TWEET_TEXT) as f:
         content = f.read().splitlines()
 
     return content
+
 
 current_dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -22,11 +24,6 @@ tweet_labels = data = pandas.read_csv(DATA_PATH_TWEET_LABELS, names=['label'])
 print(tweet_ids.shape)
 print(tweet_text.shape)
 print(tweet_labels.shape)
-
-#reset index to be joined correctly
-tweet_ids = tweet_ids.reset_index(drop=True)
-tweet_text = tweet_text.reset_index(drop=True)
-tweet_labels = tweet_labels.reset_index(drop=True)
 
 twitter_data = pandas.concat([tweet_ids, tweet_text, tweet_labels], axis=1)
 
