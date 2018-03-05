@@ -14,6 +14,7 @@ def getTweetTextByLine():
 
     return content
 
+
 def save_training_data_to_file():
     list_of_tweets = getTweetTextByLine()
 
@@ -21,8 +22,15 @@ def save_training_data_to_file():
     tweet_text = pandas.DataFrame({'tweet_text': list_of_tweets})
     tweet_labels = pandas.read_csv(DATA_PATH_TWEET_LABELS, names=['label'])
 
-    tweet_text.head(13000).to_csv("tweet_texts_training.csv", encoding='utf-8', index=False, header=False)
-    tweet_labels.head(13000).to_csv("tweets_labels_training.csv", encoding='utf-8', index=False, header=False)
+    top_3_emojis_tweet_data = pandas.concat([tweet_text, tweet_labels], axis=1);
+    print(top_3_emojis_tweet_data.shape)
+
+    top_3_emojis_tweet_data = top_3_emojis_tweet_data[top_3_emojis_tweet_data['label'] < 3]
+
+    print(top_3_emojis_tweet_data.shape)
+
+    top_3_emojis_tweet_data['tweet_text'].head(12500).to_csv("tweet_texts_training.csv", encoding='utf-8', index=False, header=False)
+    top_3_emojis_tweet_data['label'].head(12500).to_csv("tweets_labels_training.csv", encoding='utf-8', index=False, header=False)
 
     # print(tweet_ids.shape)
     # print(tweet_text.shape)

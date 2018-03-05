@@ -6,6 +6,9 @@ import nltk
 from sklearn.feature_extraction.text import TfidfTransformer
 import os
 from sklearn.naive_bayes import MultinomialNB
+from sklearn import svm
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.svm import LinearSVC
 
 current_dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -24,11 +27,13 @@ with open(TRAINING_LABEL_DATA_PATH) as f:
 print(len(tweets))
 print(len(labels))
 
+tokenizer = nltk.casual.TweetTokenizer(preserve_case=False, reduce_len=True)
+
 vectorizer = CountVectorizer(
     lowercase=True,
     ngram_range=(1, 3),
     analyzer='word',
-    tokenizer=nltk.word_tokenize)
+    tokenizer=tokenizer.tokenize)
 
 print('step 1')
 
@@ -36,8 +41,8 @@ features = vectorizer.fit_transform(
     tweets
 )
 
-# tfidf_transformer = TfidfTransformer()
-# features_nd = tfidf_transformer.fit_transform(features)
+tfidf_transformer = TfidfTransformer()
+features_nd = tfidf_transformer.fit_transform(features)
 print('step 2')
 
 features_nd = features.toarray()
@@ -48,21 +53,27 @@ X_train, X_test, y_train, y_test = train_test_split(
     features_nd,
     labels,
     train_size=0.8,
-    test_size=0.2)
+    test_size=0.2,
+    shuffle=True
+)
 
 print('step 4')
 #
-log_model = LogisticRegression()
-log_model = log_model.fit(X=X_train, y=y_train)
+# log_model = LogisticRegression()
+# log_model = log_model.fit(X=X_train, y=y_train)
+#
+# print('step 4')
 
-print('step 4')
-
-y_pred = log_model.predict(X_test)
+# y_pred = log_model.predict(X_test)
 
 # clf = MultinomialNB().fit(X_train, y_train)
 #
 # y_pred = clf.predict(X_test)
 
+classifier_linear = OneVsRestClassifier(LinearSVC(random_state=0))
+classifier_linear.fit(X_train, y_train)
+
+y_pred = classifier_linear.predict(X_test)
 
 print(accuracy_score(y_test, y_pred))
 
